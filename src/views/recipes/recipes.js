@@ -40,7 +40,7 @@ export default {
         {
           text: "เมนู",
           align: "start",
-          value: "name",
+          value: "menu_name",
           class: "primary--text font-size: 50%",
           // width: "10%",
         },
@@ -64,23 +64,25 @@ export default {
         },
         {
           text: "ระยะเวลา",
-          value: "duration",
+          value: "duration.time",
           class: "primary--text",
           //  width: "3%"
         },
         {
           text: "ความยากง่าย",
-          value: "level",
+          value: "level.level_name",
           class: "primary--text",
           // width: "3%"
         },
         {
           text: "เจ้าของเมนู",
-          value: "userId",
+          value: "user.user_name",
           class: "primary--text",
           // width: "20%",
         },
       ],
+
+      baseUrl: "../../assets/menu_pic/",
       
       select: [],
 
@@ -208,6 +210,10 @@ export default {
         this.getAllResult = resp;
         console.log(resp)
         this.data1 = resp.data;
+
+        this.data1.forEach((item) => {
+          item.imgSrc = this.baseUrl + item.img;
+        });
         // this.itemsPerPage = resp.data.itemsPerPage;
         // this.totalItems = resp.data.totalItems;
 
@@ -227,6 +233,10 @@ export default {
   },
 
   methods: {
+    getImageUrl(img) {
+      console.log('img/menu_pic/' + img);
+      return "img/menu_pic/" + img;
+    },
 
     getItemPerPage(val) {
       this.itemsPerPage = val;

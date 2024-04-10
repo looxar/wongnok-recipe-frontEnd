@@ -112,6 +112,10 @@
               </v-row>
             </v-container>
           </v-col>
+
+          <!-- <v-col cols="12" sm="2" md="2">
+            <v-img :src="('img/menu_pic/menu_pic_1.jpg')" alt="123" />
+          </v-col> -->
         </v-row>
       </v-form>
     </div>
@@ -244,68 +248,17 @@
       loading-text="Loading... Please wait"
       class="elevation-5 mytable ma-0 pa-0"
       v-model="selected"
-      show-select
       @input="enterSelect()"
     >
-      <!-- :server-items-length="totalItems" -->
-      <!-- :footer-props="{ 'items-per-page-options': [30, 50, 100] }" -->
-      <template v-slot:top>
-        <v-toolbar flat>
-          <v-dialog v-model="dialog" max-width="500px">
-            <v-card>
-              <v-card-title>
-                <span class="text-h5">{{ formTitle }}</span>
-              </v-card-title>
-
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <qrcode-vue
-                      :value="qrcode_value"
-                      :size="qrcode_size"
-                      level="H"
-                    ></qrcode-vue>
-                    <H1> {{ formDevPeaNo }} </H1>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
-                  Cancel
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="text-h5"
-                >เชื่อมต่อไปยังหน้าแจ้งซ่อม</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
-      </template>
-
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-icon medium class="mr-2" @click="editItem(item)">
-          mdi-qrcode-scan
-        </v-icon>
-        <v-icon medium @click="deleteItem(item)">
-          mdi-folder-wrench-outline
-        </v-icon>
+      <template v-slot:[`item.img`]="{ item }">
+        <!-- Render the image in the cell -->
+        <v-img
+          :src="getImageUrl(item.img)"
+          alt="item.menu_name"
+          contain    
+          height="100px"
+          width="150px">
+        ></v-img>
       </template>
     </v-data-table>
   </div>
@@ -316,4 +269,5 @@
 <link
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,100,0,0"
-/>./recipes.js./recipes.js
+/>
+./recipes.js./recipes.js
