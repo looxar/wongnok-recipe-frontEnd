@@ -28,8 +28,6 @@ Vue.component("treeselect", Treeselect);
 // import the styles
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
-import router from "../../router";
-
 export default {
   name: "EventsList",
   data() {
@@ -83,16 +81,15 @@ export default {
       ],
 
       baseUrl: "../../assets/menu_pic/",
-      
-      select: [],
 
+      select: [],
       selectedFruits: [],
       selectedTypeSearch: [],
-      appendBranch: [],
+
       appendType: [],
       appendText: [],
       jsonObj: [],
-      jsonStrBranch: '{"branch":["*"]}',
+
       jsonStrType: '{"type":["*"]}',
       jsonTextSearch: '{"text":["*"]}',
       appendSearch: [],
@@ -156,11 +153,15 @@ export default {
         value: "alllevel",
       },
       setAssetType: [],
+      setDuration: [],
+      setLevel: [],
       jsonStrAssetType: '{"assetType":["53"]}',
+      jsonStrDuration: '{"duration":["ทุกช่วงเวลา"]}',
+      jsonStrLevel: '{"level":["ทุกระดับ"]}',
       dataExcel: [],
 
-      qrcode_value:null,
-        // JSON.parse([
+      qrcode_value: null,
+      // JSON.parse([
 
       // ]),
       qrcode_size: 128,
@@ -208,7 +209,7 @@ export default {
       .get("http://localhost:8080/recipe/all/")
       .then((resp) => {
         this.getAllResult = resp;
-        console.log(resp)
+        console.log(resp);
         this.data1 = resp.data;
 
         this.data1.forEach((item) => {
@@ -234,7 +235,7 @@ export default {
 
   methods: {
     getImageUrl(img) {
-      console.log('img/menu_pic/' + img);
+      console.log("img/menu_pic/" + img);
       return "img/menu_pic/" + img;
     },
 
@@ -244,41 +245,6 @@ export default {
       this.searchFunction();
     },
 
-    toggleBranch() {
-      this.$nextTick(() => {
-        if (this.likesAllFruit) {
-          this.selectedFruits = [];
-          this.appendBranch = [];
-          console.log("b-");
-        } else {
-          this.selectedFruits = this.fruits.slice();
-          this.jsonObj = JSON.parse(this.jsonStrBranch);
-          this.jsonObj["branch"] = "E3";
-          // this.jsonObj["branch"].push("E3");
-          this.appendBranch = JSON.stringify(this.jsonObj);
-          console.log("b- " + this.appendBranch);
-          // console.log("fruits" + this.fruits[0]["name"]);
-        }
-      });
-    },
-    toggleBranch2(Fruits) {
-      this.jsonObj = JSON.parse(this.jsonStrBranch);
-      this.jsonObj["branch"] = [];
-      this.jsonObj["branch"] = Fruits;
-      this.appendBranch = JSON.stringify(this.jsonObj);
-      console.log("b-" + this.appendBranch);
-    },
-    
-    treeselectChange: function (node) {
-      // alert("changed ", value);
-      console.log(node.value);
-      this.jsonObj = JSON.parse(this.jsonStrBranch);
-      this.jsonObj["branch"] = [];
-      this.jsonObj["branch"] = node.value;
-      this.appendBranch = JSON.stringify(this.jsonObj);
-      console.log("b-" + this.appendBranch);
-    },
-   
     toggleAssetType(assetType) {
       this.jsonObj = JSON.parse(this.jsonStrAssetType);
       this.jsonObj["assetType"] = [];
@@ -287,36 +253,90 @@ export default {
       console.log("assetType-" + JSON.stringify(this.jsonObj));
     },
 
+    toggleLevel(level) {
+      this.jsonObj = JSON.parse(this.jsonStrLevel);
+      this.jsonObj["level"] = [];
+      this.jsonObj["level"] = level;
+      this.setLevel = JSON.stringify(this.jsonObj);
+      console.log("level-" + JSON.stringify(this.jsonObj));
+    },
+
+    toggleDuration(duration) {
+      this.jsonObj = JSON.parse(this.jsonStrDuration);
+      this.jsonObj["duration"] = [];
+      this.jsonObj["duration"] = duration;
+      this.setDuration = JSON.stringify(this.jsonObj);
+      console.log("duration-" + JSON.stringify(this.jsonObj));
+    },
+
     searchFunction() {
       this.qrcode_value2 = [];
       this.result = [];
       this.groupSelected = [];
       this.selected = [];
-      if (this.appendBranch == "") {
+      if (
+        this.textSearch == "" &&
+        this.setDuration.length == 0 &&
+        this.setLevel.length == 0
+      ) {
         this.alert = true;
         window.setInterval(() => {
           this.alert = false;
           // console.log("hide alert after 3 seconds");
         }, 3000);
       } else {
-        if (this.setAssetType.length == 0) {
-          this.setAssetType = JSON.stringify({ assetType: 53 });
+        if (this.setDuration.length == 0) {
+          this.setDuration = JSON.stringify({ duration: "ทุกช่วงเวลา" });
         }
 
         this.myloadingvariable = true;
-        let selectedBranch = JSON.parse(this.appendBranch);
 
-        let setAssetType2 = JSON.parse(this.setAssetType);
+        let setDuration2 = JSON.parse(this.setDuration);
         // console.log("setAssetType ",this.setAssetType);
         let params = [];
         console.log("itemsPerPage", this.itemsPerPage);
         //ถ้าไม่ใส่คำค้น
         if (this.textSearch.length == 0) {
+          if (
+            this.setLevel == "ทุกระดับ" &&
+            this.setDuration !== "ทุกช่วงเวลา"
+          ) {
+            params = {
+              setDuration: setDuration2.duration,
+            };
+            axios
+            .post("http://localhost:8080/recipe/byduration", {
+              params,
+            })
+            .then((resp) => {
+              this.getAllResult = resp.data;
+              console.log(
+                "searchNoWordUnpage-" + params["region"],
+                JSON.stringify(this.getAllResult)
+              );
 
-          params = {
-            region: selectedBranch.branch,
-            setAssetType: setAssetType2.assetType,
-          };
+              this.data1 = resp.data.dataExcel;
+              // this.itemsPerPage = resp.data.itemsPerPage;
+              this.totalItems = resp.data.totalItems;
+              this.myloadingvariable = false;
+            })
+            .catch((error) => {
+              console.log(error.resp);
+            });
+          } else if (
+            this.setDuration == "ทุกช่วงเวลา" &&
+            this.setLevel !== "ทุกระดับ"
+          ) {
+            params = {
+              SetLevel: this.setLevel.level,
+            };
+          } else {
+            params = {
+              setDuration: setDuration2.duration,
+              SetLevel: this.setLevel.level,
+            };
+          }
+          
           console.log("searchNoWordUnpage-", params);
           axios
             .get("http://localhost:8080/api/dev/searchNoWordUnpage", {
@@ -342,11 +362,8 @@ export default {
         //ถ้าใส่คำค้น
         else {
           params = {
-            // page: 0,
-            // size: this.itemsPerPage,
-            region: selectedBranch.branch,
             textSearch: this.textSearch,
-            setAssetType: setAssetType2.assetType,
+            
           };
           console.log("searchFunction ", params);
 
@@ -368,117 +385,6 @@ export default {
       }
     },
 
-    async fetchData2() {
-      if (this.appendBranch == "") {
-        this.alert = true;
-        window.setInterval(() => {
-          this.alert = false;
-          // console.log("hide alert after 3 seconds");
-        }, 3000);
-      } else {
-        // if (this.setAssetType.length == 0) {
-        //   this.setAssetType = JSON.stringify({ assetType: 53 });
-        // }
-        // this.myloadingvariable = true;
-        // let selectedBranch = JSON.parse(this.appendBranch);
-        // let setAssetType = JSON.parse(this.setAssetType);
-        // // console.log("setAssetType ",this.setAssetType);
-        // let params = [];
-        // params = {
-        //   region: selectedBranch.branch,
-        //   setAssetType: setAssetType.assetType,
-        // };
-        // let response = await axios
-        //   .get("http://localhost:8080/api/dev/getAllByPattern2unpage", {
-        //     params,
-        //   })
-        //   .then((resp) => {
-        //     this.getAllResult = resp.data;
-        //     console.log(
-        //       "getAllByPattern2unpage",
-        //       JSON.stringify(this.getAllResult)
-        //     );
-
-        //     this.dataExcel = resp.data.dataExcel;
-        //     this.itemsPerPage = resp.data.itemsPerPage;
-        //     this.totalItems = resp.data.totalItems;
-        //     this.myloadingvariable = false;
-        //     return this.dataExcel;
-        //   })
-        //   .catch((error) => {
-        //     console.log(error.resp);
-        //   });
-
-        this.dataExcel = this.data1;
-        this.myloadingvariable = false;
-        console.log("dataExcel : ", this.dataExcel);
-        return this.dataExcel;
-      }
-    },
-
-    startDownload() {
-      alert("show loading");
-    },
-    finishDownload() {
-      alert("hide loading");
-    },
-
-    editItem(item) {
-      this.editedIndex = this.data1.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      console.log(this.editedItem);
-      (this.qrcode_value =
-        // JSON.parse([
-        JSON.stringify({
-          pea_no: this.editedItem["devPeaNo"],
-          description: this.editedItem["devDescription"],
-          serial: this.editedItem["devSerialNo"],
-          user_id: this.editedItem["tbEmployee"]["empId"],
-          user_name: this.editedItem["tbEmployee"]["empName"],
-          received_date: this.editedItem["devReceivedDate"],
-          price_recieve: this.editedItem["devReceivedPrice"],
-          price_left: this.editedItem["devLeftPrice"],
-          cc_short_name: this.editedItem["tbCostCenterTest"]["ccShortName"],
-          cost_center: this.editedItem["tbCostCenterTest"]["ccLongCode"],
-        })),
-        (this.dialog = true);
-    },
-
-    deleteItem(item) {
-      this.editedIndex = this.data1.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
-    },
-
-    deleteItemConfirm() {
-      router.push("/repairForm");
-      this.closeDelete();
-    },
-
-    close() {
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-
-    closeDelete() {
-      this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
-      } else {
-        this.desserts.push(this.editedItem);
-      }
-      this.close();
-    },
     enterSelect() {
       let e = this.selected.map((e) => e);
       // console.log(e.length); // logs all the selected items.
