@@ -92,16 +92,17 @@
       v-model="selected"
       @input="enterSelect()"
     >
-      <template v-slot:[`item.img`]="{ item }">
+      <template v-slot:[`item.pathimg`]="{ item }">
         <!-- Render the image in the cell -->
         <v-img
-          :src="getImageUrl(item.img)"
+          :src="getImageUrl(item.pathimg)"
           alt="item.menu_name"
           contain    
           height="100px"
           width="150px">
         ></v-img>
       </template>
+      <template #[`item.full_time`]="{ item }">{{ item.duration.time_start }} - {{ item.duration.time_end}} นาที</template>
     </v-data-table>
   </div>
 </template>

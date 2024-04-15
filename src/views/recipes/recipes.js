@@ -44,7 +44,7 @@ export default {
         },
         {
           text: "ภาพประกอบ",
-          value: "img",
+          value: "pathimg",
           class: "primary--text",
           // width: "6%"
         },
@@ -62,13 +62,13 @@ export default {
         },
         {
           text: "ระยะเวลา",
-          value: "duration.time",
+          value: "full_time",
           class: "primary--text",
           //  width: "3%"
         },
         {
           text: "ความยากง่าย",
-          value: "level.level_name",
+          value: "difficult.level_name",
           class: "primary--text",
           // width: "3%"
         },
