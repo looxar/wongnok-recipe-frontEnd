@@ -93,14 +93,13 @@
       @input="enterSelect()"
     >
       <template v-slot:[`item.pathimg`]="{ item }">
-        <!-- Render the image in the cell -->
-        <v-img
-          :src="getImageUrl(item.pathimg)"
-          alt="item.menu_name"
+        <img
+        :src="getImageUrl(item.pathimg)"
+        :alt="item.menu_name"
           contain    
           height="100px"
           width="150px">
-        ></v-img>
+        >
       </template>
       <template #[`item.full_time`]="{ item }"><div v-if="item.duration.id === 4">60 นาทีขึ้นไป</div><div v-else>{{ item.duration.time_start }} - {{ item.duration.time_end}} นาที</div></template>
     </v-data-table>

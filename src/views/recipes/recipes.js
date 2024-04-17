@@ -200,9 +200,10 @@ export default {
   },
 
   methods: {
-    getImageUrl(img) {
-      console.log("img/menu_pic/" + img);
-      return "img/menu_pic/" + img;
+    getImageUrl(pathimg) {
+      console.log("/recipes-img/" + pathimg);
+      // return require('/recipes-img/' + pathimg);
+      return `${pathimg}`;
     },
 
     getItemPerPage(val) {

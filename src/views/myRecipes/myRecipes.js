@@ -63,30 +63,33 @@ export default {
         console.error("No file selected");
         return;
       }
-      // let params = new FormData();
-      // // formData.append("image", this.file);
-      // params.append("menu_name", this.menu_name);
-      // params.append("pathimg", this.pathimg);
-      // params.append("raw_material", this.raw_material);
-      // params.append("step", this.step);
-      // params.append("duration", this.selectedDuration.id);
-      // params.append("difficult", this.selectedLevel.id);
-      // params.append("user", this.user);
+      let params = new FormData();
+      params.append("image", this.file);
+      params.append("menu_name", this.menu_name);
+      params.append("pathimg", this.pathimg);
+      params.append("raw_material", this.raw_material);
+      params.append("step", this.step);
+      params.append("duration", this.selectedDuration.id);
+      params.append("difficult", this.selectedLevel.id);
+      params.append("user", this.user);
 
       // for (const entry of params.entries()) {
       //   console.log(entry);
       // }
-      let params = [];
-      params = {
-        menu_name: "กะเพราหมูสับบบ",
-        pathimg: "pathToPic",
-        raw_material: "ใบกะเพรา+หมูสับ+กระเทียม",
-        step: "วิธีทำ123",
-        duration: 1,
-        difficult: 1,
-        user: 2,
-      };
-      params.push("image", this.file);
+      // let params = [];
+      // params = {
+      //   menu_name: "กะเพราหมูสับบบ",
+      //   pathimg: "pathToPic",
+      //   raw_material: "ใบกะเพรา+หมูสับ+กระเทียม",
+      //   step: "วิธีทำ123",
+      //   duration: 1,
+      //   difficult: 1,
+      //   user: 2,
+      // };
+      // params.push("image", this.file);
+      // params = {
+      //   setDuration: this.setDuration,
+      // };
       axios
         .post("http://localhost:8080/recipecreate", params, {
           headers: {
