@@ -4,12 +4,6 @@ import axios from "axios";
 import JsonExcel from "vue-json-excel";
 Vue.component("downloadExcel", JsonExcel);
 
-import QrcodeVue from "qrcode.vue";
-Vue.component("qrcode-vue", QrcodeVue);
-
-import { mdiQrcodeScan } from "@mdi/js";
-Vue.component("mdiQrcode-Scan", mdiQrcodeScan);
-
 import { mdiMicrosoftExcel } from "@mdi/js";
 Vue.component("mdiMicrosoftExcel", mdiMicrosoftExcel);
 
@@ -18,9 +12,6 @@ Vue.component("mdiFileFindOutline", mdiFileFindOutline);
 
 import { mdiMagnify } from "@mdi/js";
 Vue.component("mdiMagnify", mdiMagnify);
-
-import { mdiQrcode } from "@mdi/js";
-Vue.component("mdiQrcode", mdiQrcode);
 
 // import the component
 import Treeselect from "@riophae/vue-treeselect";
@@ -153,38 +144,17 @@ export default {
         value: "alllevel",
       },
       setAssetType: [],
-      setDuration: [],
-      setLevel: [],
-      jsonStrAssetType: '{"assetType":["53"]}',
-      jsonStrDuration: '{"duration":["ทุกช่วงเวลา"]}',
-      jsonStrLevel: '{"level":["ทุกระดับ"]}',
+      setDuration: 5,
+      setLevel: 4,
+      // jsonStrAssetType: '{"assetType":["53"]}',
+      // jsonStrDuration: '{"duration":["ทุกช่วงเวลา"]}',
+      // jsonStrLevel: '{"level":["ทุกระดับ"]}',
       dataExcel: [],
 
-      qrcode_value: null,
-      // JSON.parse([
-
-      // ]),
-      qrcode_size: 128,
       dialog: false,
       dialogDelete: false,
-
       editedIndex: -1,
-      editedItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
-      },
-      defaultItem: {
-        name: "",
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
-      },
       groupSelected: [],
-      qrcode_value2: [],
       result: [],
       selected: [],
 
@@ -215,13 +185,9 @@ export default {
         this.data1.forEach((item) => {
           item.imgSrc = this.baseUrl + item.img;
         });
-        // this.itemsPerPage = resp.data.itemsPerPage;
-        // this.totalItems = resp.data.totalItems;
 
-        // this.data1 = resp.data.data1;
-        this.itemsPerPage = resp.data.itemsPerPage;
-        this.totalItems = resp.data.totalItems;
-        console.log("at mounted ", this.getAllResult.data.totalItems);
+        this.itemsPerPage = resp.data.length;
+        console.log("at mounted ", this.data1);
         this.myloadingvariable = false;
       })
 
@@ -245,39 +211,30 @@ export default {
       this.searchFunction();
     },
 
-    toggleAssetType(assetType) {
-      this.jsonObj = JSON.parse(this.jsonStrAssetType);
-      this.jsonObj["assetType"] = [];
-      this.jsonObj["assetType"] = assetType;
-      this.setAssetType = JSON.stringify(this.jsonObj);
-      console.log("assetType-" + JSON.stringify(this.jsonObj));
-    },
-
     toggleLevel(level) {
-      this.jsonObj = JSON.parse(this.jsonStrLevel);
-      this.jsonObj["level"] = [];
-      this.jsonObj["level"] = level;
-      this.setLevel = JSON.stringify(this.jsonObj);
-      console.log("level-" + JSON.stringify(this.jsonObj));
+      this.setLevel = level;
+      console.log("level-" + this.setLevel);
     },
 
     toggleDuration(duration) {
-      this.jsonObj = JSON.parse(this.jsonStrDuration);
-      this.jsonObj["duration"] = [];
-      this.jsonObj["duration"] = duration;
-      this.setDuration = JSON.stringify(this.jsonObj);
-      console.log("duration-" + JSON.stringify(this.jsonObj));
+      this.setDuration = duration;
+      console.log("duration-" + this.setDuration);
     },
 
     searchFunction() {
-      this.qrcode_value2 = [];
       this.result = [];
-      this.groupSelected = [];
-      this.selected = [];
+      console.log(
+        "this.textSearch: " +
+          this.textSearch +
+          " this.setDuration: " +
+          this.setDuration +
+          " this.setLevel: " +
+          this.setLevel
+      );
       if (
         this.textSearch == "" &&
-        this.setDuration.length == 0 &&
-        this.setLevel.length == 0
+        this.setDuration == 0 &&
+        this.setLevel == 0
       ) {
         this.alert = true;
         window.setInterval(() => {
@@ -285,85 +242,83 @@ export default {
           // console.log("hide alert after 3 seconds");
         }, 3000);
       } else {
-        if (this.setDuration.length == 0) {
-          this.setDuration = JSON.stringify({ duration: "ทุกช่วงเวลา" });
-        }
-
         this.myloadingvariable = true;
 
-        let setDuration2 = JSON.parse(this.setDuration);
         // console.log("setAssetType ",this.setAssetType);
         let params = [];
         console.log("itemsPerPage", this.itemsPerPage);
         //ถ้าไม่ใส่คำค้น
         if (this.textSearch.length == 0) {
-          if (
-            this.setLevel == "ทุกระดับ" &&
-            this.setDuration !== "ทุกช่วงเวลา"
-          ) {
+          if (this.setLevel == 4 && this.setDuration !== 5) {
+            console.log("byduration-", this.setDuration);
             params = {
-              setDuration: setDuration2.duration,
+              setDuration: this.setDuration,
             };
             axios
-            .post("http://localhost:8080/recipe/byduration", {
-              params,
-            })
-            .then((resp) => {
-              this.getAllResult = resp.data;
-              console.log(
-                "searchNoWordUnpage-" + params["region"],
-                JSON.stringify(this.getAllResult)
-              );
+              .post("http://localhost:8080/recipe/byduration", {
+                params,
+              })
+              .then((resp) => {
+                this.getAllResult = resp.data;
 
-              this.data1 = resp.data.dataExcel;
-              // this.itemsPerPage = resp.data.itemsPerPage;
-              this.totalItems = resp.data.totalItems;
-              this.myloadingvariable = false;
-            })
-            .catch((error) => {
-              console.log(error.resp);
-            });
-          } else if (
-            this.setDuration == "ทุกช่วงเวลา" &&
-            this.setLevel !== "ทุกระดับ"
-          ) {
+                this.data1 = resp.data;
+                console.log(this.data1);
+                this.myloadingvariable = false;
+              })
+              .catch((error) => {
+                console.log(error.resp);
+              });
+          } else if (this.setDuration == 5 && this.setLevel !== 4) {
+            console.log("bylevel-", this.setLevel);
             params = {
-              SetLevel: this.setLevel.level,
+              setLevel: this.setLevel,
             };
+            axios
+              .post("http://localhost:8080/recipe/bylevel", {
+                params,
+              })
+              .then((resp) => {
+                this.getAllResult = resp.data;
+                this.data1 = resp.data;
+                console.log(this.data1);
+                this.myloadingvariable = false;
+              })
+              .catch((error) => {
+                console.log(error.resp);
+              });
           } else {
             params = {
-              setDuration: setDuration2.duration,
-              SetLevel: this.setLevel.level,
+              setDuration: this.setDuration,
+              setLevel: this.setLevel,
             };
+            console.log(
+              "bybothcon-level-" +
+                this.setLevel +
+                " duration-" +
+                this.setDuration
+            );
+            axios
+              .post("http://localhost:8080/recipe/bybothcon", {
+                params,
+              })
+              .then((resp) => {
+                this.getAllResult = resp.data;
+                console.log(
+                  "setDuration-" + params["setDuration"],
+                  JSON.stringify(this.getAllResult)
+                );
+                this.data1 = resp.data;
+                this.myloadingvariable = false;
+              })
+              .catch((error) => {
+                console.log(error.resp);
+              });
           }
-          
-          console.log("searchNoWordUnpage-", params);
-          axios
-            .get("http://localhost:8080/api/dev/searchNoWordUnpage", {
-              params,
-            })
-            .then((resp) => {
-              this.getAllResult = resp.data;
-              console.log(
-                "searchNoWordUnpage-" + params["region"],
-                JSON.stringify(this.getAllResult)
-              );
-
-              this.data1 = resp.data.dataExcel;
-              // this.itemsPerPage = resp.data.itemsPerPage;
-              this.totalItems = resp.data.totalItems;
-              this.myloadingvariable = false;
-            })
-            .catch((error) => {
-              console.log(error.resp);
-            });
-          // }
         }
         //ถ้าใส่คำค้น
         else {
           params = {
             textSearch: this.textSearch,
-            
           };
           console.log("searchFunction ", params);
 
@@ -374,103 +329,13 @@ export default {
               console.log("searchWithWord", JSON.stringify(this.getAllResult));
 
               this.data1 = resp.data.data1;
-              this.itemsPerPage = resp.data.itemsPerPage;
-              this.totalItems = resp.data.totalItems;
+              this.itemsPerPage = resp.data.length;
               this.myloadingvariable = false;
             })
             .catch((error) => {
               console.log(error.resp);
             });
         }
-      }
-    },
-
-    enterSelect() {
-      let e = this.selected.map((e) => e);
-      // console.log(e.length); // logs all the selected items.
-      this.qrcode_value2 = [];
-      this.detail_value = [];
-      this.groupSelected = e;
-      console.log(this.groupSelected.length);
-      // this.qrcode_value2 = JSON.stringify(this.groupSelected);
-      // user_id: this.editedItem["tbEmployee"]["empId"],
-      // user_name: this.editedItem["tbEmployee"]["empName"],
-      let i = 0;
-      this.result = this.groupSelected.map(({ devPeaNo }) => ({ devPeaNo }));
-      this.result2 = this.groupSelected.map(({ devPeaNo }) => ({ devPeaNo }));
-      // result.forEach((element) => {
-      //   element.empId = this.groupSelected.tbEmployee.empId;
-      // });
-      for (i = 0; i < this.groupSelected.length; i++) {
-        if (this.groupSelected[i].tbEmployee !== null) {
-          this.result[i].empId = this.groupSelected[i].tbEmployee.empId;
-          this.result[i].empName = this.groupSelected[i].tbEmployee.empName;
-          // this.result2[i].empId = this.groupSelected[i].tbEmployee.empId;
-          // this.result2[i].empName = this.groupSelected[i].tbEmployee.empName;
-        } else {
-          this.result[i].empId = "ไม่ระบุ";
-          this.result[i].empName = "ไม่ระบุ";
-          // this.result2[i].empId = "ไม่ระบุ";
-          // this.result2[i].empName = "ไม่ระบุ";
-        }
-        // result[i].empId = this.groupSelected[i].tbEmployee.empId;
-        // result[i].empId = this.groupSelected[i].tbEmployee.empId;
-        this.result[i].devSerialNo = this.groupSelected[i].devSerialNo;
-        // this.result2[i].devSerialNo =
-        // this.groupSelected[i].devSerialNo;
-
-        this.result[i].devReceivedDate = this.groupSelected[i].devReceivedDate;
-
-        this.result[i].devReceivedPrice =
-          this.groupSelected[i].devReceivedPrice;
-
-        this.result[i].devLeftPrice = this.groupSelected[i].devLeftPrice;
-
-        this.result[i].ccLongCode =
-          this.groupSelected[i].tbCostCenterTest.ccLongCode;
-
-        this.result[i].ccShortName =
-          this.groupSelected[i].tbCostCenterTest.ccShortName;
-        this.result2[i].ccShortName =
-          this.groupSelected[i].tbCostCenterTest.ccShortName;
-
-        this.result[i].devDescription = this.groupSelected[i].devDescription;
-      }
-
-      for (i = 0; i < this.result.length; i++) {
-        console.log(JSON.stringify(this.result[i]));
-        // this.qrcode_value2[i].push(JSON.stringify(this.groupSelected[i].devPeaNo)); ?region=ZC05020000
-        this.detail_value.push(JSON.stringify(this.result[i]));
-      }
-      for (i = 0; i < this.result.length; i++) {
-        console.log(JSON.stringify(this.result2[i]));
-        // this.qrcode_value2[i].push(JSON.stringify(this.groupSelected[i].devPeaNo)); ?region=ZC05020000
-        this.qrcode_value2.push(JSON.stringify(this.result2[i].devPeaNo));
-      }
-      if (this.selected.length == this.itemsPerPage) {
-        alert("selected all");
-      }
-    },
-
-    // genQR_Code() {},
-
-    generateReport() {
-      // var opt = {
-      //   margin:       [30, 0, 30, 0], //top, left, buttom, right
-      //   // filename:    name + '.pdf',
-      //   // image:        { type: 'jpeg', quality: 0.98 },
-      //   // html2canvas:  { dpi: 192, scale: 2, letterRendering: true},
-      //   // jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait'},
-      //   // pageBreak: { mode: 'css', after:'.break-page'}
-      //   };
-      if (this.groupSelected.length == 0) {
-        this.alert2 = true;
-        window.setInterval(() => {
-          this.alert2 = false;
-          // console.log("hide alert after 3 seconds");
-        }, 3000);
-      } else {
-        this.$refs.html2Pdf.generatePdf();
       }
     },
   },

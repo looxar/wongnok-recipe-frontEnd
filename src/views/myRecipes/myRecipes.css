@@ -1,0 +1,8 @@
+.centered-input input {
+  text-align: center;
+  font-size: 22px !important;
+}
+
+.centered-input{
+  padding: 0px 0;
+}

@@ -30,7 +30,7 @@
                 <v-select
                   v-model="selectedDuration"
                   :items="duration"
-                  item-value="value"
+                  item-value="id"
                   item-text="name"
                   label="เวลาที่ใช้ทำอาหาร"
                   @change="toggleDuration"
@@ -46,7 +46,7 @@
                 <v-select
                   v-model="selectedLevel"
                   :items="level"
-                  item-value="value"
+                  item-value="id"
                   item-text="name"
                   label="ความยากง่าย"
                   @change="toggleLevel"
@@ -102,7 +102,7 @@
           width="150px">
         ></v-img>
       </template>
-      <template #[`item.full_time`]="{ item }">{{ item.duration.time_start }} - {{ item.duration.time_end}} นาที</template>
+      <template #[`item.full_time`]="{ item }"><div v-if="item.duration.id === 4">60 นาทีขึ้นไป</div><div v-else>{{ item.duration.time_start }} - {{ item.duration.time_end}} นาที</div></template>
     </v-data-table>
   </div>
 </template>
@@ -113,4 +113,3 @@
   rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,100,0,0"
 />
-./recipes.js./recipes.js
