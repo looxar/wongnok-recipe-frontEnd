@@ -24,15 +24,15 @@
 .v-data-table .v-data-table-header tr th {
   font-size: 1rem !important;
   text-align: center !important;
-  padding: 0 !important;
+  padding: 2 !important;
 
-  margin: 0 !important;
+  margin: 2 !important;
   white-space: nowrap;
 }
 
 .mytable tbody td{
-  padding: 0 !important;
-  margin: 0 !important;
+  padding: 1 !important;
+  margin: 1 !important;
   /* font-size: 1.2rem !important; */
 }
 

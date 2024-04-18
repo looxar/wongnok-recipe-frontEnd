@@ -74,7 +74,7 @@ export default {
       baseUrl: "../../assets/menu_pic/",
 
       select: [],
-      selectedFruits: [],
+
       selectedTypeSearch: [],
 
       appendType: [],
@@ -201,7 +201,7 @@ export default {
 
   methods: {
     getImageUrl(pathimg) {
-      console.log("/recipes-img/" + pathimg);
+      // console.log("/recipes-img/" + pathimg);
       // return require('/recipes-img/' + pathimg);
       return `http://localhost:8080/uploads/${pathimg}`;
     },
@@ -224,6 +224,7 @@ export default {
 
     searchFunction() {
       this.result = [];
+      this.data1 = [];
       console.log(
         "this.textSearch: " +
           this.textSearch +
@@ -250,7 +251,8 @@ export default {
         console.log("itemsPerPage", this.itemsPerPage);
         //ถ้าไม่ใส่คำค้น
         if (this.textSearch.length == 0) {
-          if (this.setLevel == 4 && this.setDuration !== 5) {
+          
+          if ((this.setDuration !== 5) && (this.setLevel == 4)) {
             console.log("byduration-", this.setDuration);
             params = {
               setDuration: this.setDuration,
@@ -287,7 +289,7 @@ export default {
               .catch((error) => {
                 console.log(error.resp);
               });
-          } else {
+          } else if (this.setDuration !== 5 && this.setLevel !== 4) {
             params = {
               setDuration: this.setDuration,
               setLevel: this.setLevel,
@@ -306,11 +308,33 @@ export default {
                 this.getAllResult = resp.data;
                 console.log(
                   "setDuration-" + params["setDuration"],
+                  "setLevel-" + params["setLevel"],
                   JSON.stringify(this.getAllResult)
                 );
                 this.data1 = resp.data;
                 this.myloadingvariable = false;
               })
+              .catch((error) => {
+                console.log(error.resp);
+              });
+          } else if(this.setDuration == 5 && this.setLevel == 4) {
+            this.myloadingvariable = true;
+            axios
+              .get("http://localhost:8080/recipe/all/")
+              .then((resp) => {
+                this.getAllResult = resp;
+                console.log(resp);
+                this.data1 = resp.data;
+
+                this.data1.forEach((item) => {
+                  item.imgSrc = this.baseUrl + item.img;
+                });
+
+                this.itemsPerPage = resp.data.length;
+                console.log("in searchFunc ", this.data1);
+                this.myloadingvariable = false;
+              })
+
               .catch((error) => {
                 console.log(error.resp);
               });
@@ -320,16 +344,17 @@ export default {
         else {
           params = {
             textSearch: this.textSearch,
+            setDuration: this.setDuration,
+            setLevel: this.setLevel,
           };
-          console.log("searchFunction ", params);
+          console.log("searchbytext ", params);
 
           axios
-            .get("http://localhost:8080/api/dev/searchWithWord", { params })
+            .post("http://localhost:8080/recipe/bytext", { params })
             .then((resp) => {
-              this.getAllResult = resp.data;
-              console.log("searchWithWord", JSON.stringify(this.getAllResult));
-
-              this.data1 = resp.data.data1;
+              this.getAllResult = resp;
+              this.data1 = resp.data;
+              console.log("searchbytext", this.data1);
               this.itemsPerPage = resp.data.length;
               this.myloadingvariable = false;
             })
@@ -340,39 +365,5 @@ export default {
       }
     },
   },
-  computed: {
-    likesAllFruit() {
-      return this.selectedFruits.length === this.fruits.length;
-    },
-    likesSomeFruit() {
-      return this.selectedFruits.length > 0 && !this.likesAllFruit;
-    },
-    icon() {
-      if (this.likesAllFruit) return "mdi-close-box";
-      if (this.likesSomeFruit) return "mdi-minus-box";
-      return "mdi-checkbox-blank-outline";
-    },
-    likesAllTypeSearch() {
-      return this.selectedTypeSearch.length === this.typeSearch.length;
-    },
-    likesSomeTypeSearch() {
-      return this.selectedTypeSearch.length > 0 && !this.likesAllTypeSearch;
-    },
-    icon2() {
-      if (this.likesAllTypeSearch) return "mdi-close-box";
-      if (this.likesSomeTypeSearch) return "mdi-minus-box";
-      return "mdi-checkbox-blank-outline";
-    },
-    formTitle() {
-      return this.editedIndex === -1 ? "New Item" : "QR Code";
-    },
-    formDevPeaNo() {
-      return this.editedIndex === -1 ? "New Item" : this.editedItem["devPeaNo"];
-    },
-    treeselectClass() {
-      return {
-        "treeselect-invalid": !this.fieldValid,
-      };
-    },
-  },
+  computed: {},
 };
