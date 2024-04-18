@@ -203,7 +203,7 @@ export default {
     getImageUrl(pathimg) {
       console.log("/recipes-img/" + pathimg);
       // return require('/recipes-img/' + pathimg);
-      return `${pathimg}`;
+      return `http://localhost:8080/uploads/${pathimg}`;
     },
 
     getItemPerPage(val) {
